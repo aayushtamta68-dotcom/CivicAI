@@ -1,0 +1,30 @@
+# Node
+node_modules/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment Variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Build
+dist/
+
+# Uploads
+backend/uploads/
+
+# AI Model
+ai-service/model/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
