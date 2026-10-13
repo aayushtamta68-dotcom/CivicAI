@@ -1,5 +1,9 @@
+
+import os
 from flask import Flask, request, jsonify
+
 app = Flask(__name__)
+
 DEPARTMENT_KEYWORDS = {
     "Roads": {
         "pothole": 3,
@@ -56,47 +60,54 @@ DEPARTMENT_KEYWORDS = {
         "overflowing garbage": 4
     }
 }
+
+
 @app.route("/")
 def home():
     return jsonify({
         "service": "CivicAI AI Service",
         "status": "Running"
     })
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json
+    data = request.get_json(silent=True) or {}
+
     title = data.get("title", "").lower()
-    description = data.get(
-        "description",
-        ""
-    ).lower()
+    description = data.get("description", "").lower()
+
     text = title + " " + description
+
     department_scores = {
         "Roads": 0,
         "Electricity": 0,
         "Water Supply": 0,
         "Sanitation": 0
     }
+
     for department, keywords in DEPARTMENT_KEYWORDS.items():
         for keyword, score in keywords.items():
             if keyword in text:
                 department_scores[department] += score
+
     department = max(
         department_scores,
         key=department_scores.get
     )
+
     highest_score = department_scores[department]
+
     if highest_score == 0:
         department = "General"
         confidence = 0.30
     else:
-        total_score = sum(
-            department_scores.values()
-        )
+        total_score = sum(department_scores.values())
         confidence = round(
             highest_score / total_score,
             2
         )
+
     high_priority_words = [
         "accident",
         "danger",
@@ -107,31 +118,41 @@ def predict():
         "life risk",
         "shock",
         "explosion",
-        "fallen wire"]
+        "fallen wire"
+    ]
+
     medium_priority_words = [
         "broken",
         "damaged",
         "leak",
         "overflow",
         "not working",
-        "blocked"]
+        "blocked"
+    ]
+
     priority = "Low"
+
     for word in high_priority_words:
         if word in text:
             priority = "High"
             break
+
     if priority == "Low":
         for word in medium_priority_words:
             if word in text:
                 priority = "Medium"
                 break
+
     return jsonify({
         "department": department,
         "priority": priority,
         "confidence": confidence
     })
+
+
 if __name__ == "__main__":
     app.run(
-        debug=True,
-        port=5001
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5001)),
+        debug=False
     )
