@@ -28,3 +28,25 @@ ai-service/model/
 # OS
 .DS_Store
 Thumbs.db
+# Environment-specific secrets
+.env.*
+!.env.example
+!.env.*.example
+
+# Python virtual environments
+.venv/
+env/
+
+# Database dumps and local databases
+*.sql.gz
+*.dump
+*.bak
+*.sqlite
+*.sqlite3
+
+# Local credentials and private keys
+*.pem
+*.key
+
+# Runtime uploads and generated files
+uploads/
